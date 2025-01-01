@@ -21,6 +21,22 @@ module Helpers
     object.mobility_backends[name]
   end
 
+  # @return [Integer] Number of queries executed
+  # @yield block to execute
+  # @example
+  #  count_queries { Post.first } # => 1
+  def count_queries
+    query_count = 0
+    ActiveSupport::Notifications.subscribe('sql.active_record') do |_, _, _, _, details|
+      query_count += 1 unless details[:name] == 'SCHEMA'
+    end
+    logger = Logger.new(STDOUT)
+    logger.debug("-- Counting queries start --")
+    yield
+    logger.debug("-- Counting queries end (#{query_count} queries counted --")
+    query_count
+  end
+
   module LazyDescribedClass
     # lazy-load described_class if it's a string
     def described_class

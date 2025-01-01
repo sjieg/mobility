@@ -205,6 +205,30 @@ describe "Mobility::Backends::ActiveRecord::Table", orm: :active_record, type: :
             expect(translation.translated_model).to eq(subject)
           end
         end
+
+        it "creates translations for multiple locales" do
+          ActiveRecord::Base.logger = Logger.new(STDOUT)
+          ActiveRecord.verbose_query_logs = true
+          article = Article.new
+          title_backend = backend_for(article, :title)
+          content_backend = backend_for(article, :content)
+
+          Mobility.with_locale(:en) do
+            title_backend.write(:en, "English Title")
+            content_backend.write(:en, "English Content")
+          end
+
+          Mobility.with_locale(:ja) do
+            title_backend.write(:ja, "日本語のタイトル")
+            content_backend.write(:ja, "日本語の内容")
+          end
+
+          query_count = count_queries do
+            article.save!
+          end
+
+          expect(query_count).to be <= 2
+        end
       end
 
       context "translation for locale exists" do

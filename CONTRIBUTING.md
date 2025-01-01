@@ -33,6 +33,7 @@ bundle exec rspec
 This will run specs which are not dependent on any ORM (pure Ruby specs only). To test against ActiveRecord, you will need to set the `ORM` environment variable, like this:
 
 ```ruby
+ORM=active_record bundle exec rake db:create db:up
 ORM=active_record bundle exec rspec
 ```
 

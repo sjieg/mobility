@@ -21,7 +21,7 @@ namespace :db do
   task create: :setup do
     commands = {
       "mysql"    => "mysql -h #{config['host']} -P #{config['port']} -u #{config['username']} --password=#{config['password']} -e 'create database #{config["database"]} default character set #{config["encoding"]} default collate #{config["collation"]};' >/dev/null",
-      "postgres" => "psql -c 'create database #{config['database']};' -U #{config['username']} >/dev/null"
+      "postgres" => "psql -h #{config['host']} -c 'create database #{config['database']};' -U #{config['username']} >/dev/null"
     }
     %x{#{commands[driver] || true}}
     $?.success? ? puts("Database successfully created.") : puts("There was an error creating the database.")
@@ -31,7 +31,7 @@ namespace :db do
   task drop: :setup do
     commands = {
       "mysql"    => "mysql -h #{config['host']} -P #{config['port']} -u #{config['username']} --password=#{config['password']} -e 'drop database #{config["database"]};' >/dev/null",
-      "postgres" => "psql -c 'drop database #{config['database']};' -U #{config['username']} >/dev/null"
+      "postgres" => "psql -h #{config['host']} -c 'drop database #{config['database']};' -U #{config['username']} >/dev/null"
     }
     %x{#{commands[driver] || true}}
     $?.success? ? puts("Database successfully dropped.") : puts("There was an error dropping the database.")
